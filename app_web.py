@@ -61,7 +61,7 @@ st.markdown("### Selección de Pasodobles")
 # Filtros en la barra lateral o principal
 modo = st.selectbox(
     "¿Qué tipo de acto es?",
-    ["Todo el archivo", "Pasacalle Alegre (Sin himnos)", "Sólo Fáciles", "Estilo Torero"]
+    ["Todo el archivo", "Pasacalle Alegre (Sin himnos)", "Sólo Fáciles", "Estilo Torero", "Pasacalle Elegante"]
 )
 
 cantidad = st.number_input("¿Cuántos pasodobles necesitas?", min_value=1, max_value=10, value=4)
