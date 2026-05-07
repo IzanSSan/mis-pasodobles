@@ -2,7 +2,7 @@ import streamlit as st
 import random
 
 # Configuración de la página para móvil
-st.set_page_config(page_title="Sorteo Pasodobles 2025", page_icon="🎵")
+st.set_page_config(page_title="Elección de pasodobles", page_icon="🎵")
 
 # --- BASE DE DATOS COMPLETA REVISADA ---
 PASODOBLES = {
@@ -56,7 +56,7 @@ PASODOBLES = {
 
 # Título visual
 st.title("🎵 Generador de Repertorio")
-st.markdown("### Selección de Pasodobles 2025")
+st.markdown("### Selección de Pasodobles")
 
 # Filtros en la barra lateral o principal
 modo = st.selectbox(
