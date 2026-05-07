@@ -72,7 +72,8 @@ if st.button("🔀 GENERAR SORTEO", use_container_width=True):
     filtro_map = {
         "Pasacalle Alegre (Sin himnos)": "alegre",
         "Sólo Fáciles": "facil",
-        "Estilo Torero": "torero"
+        "Estilo Torero": "torero",
+        "Pasacalle Elegante": "elegante"
     }
     
     tag_buscado = filtro_map.get(modo)
