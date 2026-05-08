@@ -7,11 +7,15 @@ from streamlit_gsheets import GSheetsConnection
 st.set_page_config(page_title="Elección de pasodobles", page_icon="🎵")
 
 # --- CONEXIÓN A GOOGLE SHEETS ---
-# En lugar de la lista manual, leemos el Excel
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Leemos los datos (indicando que queremos la hoja principal)
-df = conn.read()
+# Creamos una función con caché de 10 segundos
+@st.cache_data(ttl=10)
+def cargar_datos_sheet():
+    return conn.read()
+
+# Llamamos a la función
+df = cargar_datos_sheet()
 
 # Convertimos a diccionario para no romper el código del sorteo
 PASODOBLES = {}
