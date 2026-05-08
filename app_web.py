@@ -1,58 +1,75 @@
 import streamlit as st
-import random
+import pandas as pd
+from streamlit_gsheets import GSheetsConnection
 
 # Configuración de la página para móvil
 st.set_page_config(page_title="Elección de pasodobles", page_icon="🎵")
 
+# --- CONEXIÓN A GOOGLE SHEETS ---
+# En lugar de la lista manual, leemos el Excel
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# Leemos los datos (Asegúrate de que tu Excel tenga columnas: ID, Nombre, Tags)
+df = conn.read()
+
+# Convertimos el Excel a un diccionario para que el resto de tu código
+# de sorteo siga funcionando sin cambiar ni una coma
+PASODOBLES = {}
+for index, row in df.iterrows():
+    PASODOBLES[int(row['ID'])] = {
+        "nombre": row['Nombre'],
+        "tags": [t.strip() for t in str(row['Tags']).split(',')]
+    }
+
 # --- BASE DE DATOS COMPLETA REVISADA ---
-PASODOBLES = {
-    1: {"nombre": "Alcalde i Músic", "tags": ["alegre", "pasacalle"]},
-    2: {"nombre": "Alegría Agostense", "tags": ["alegre", "facil"]},
-    3: {"nombre": "Alfara de Algimia", "tags": ["concierto"]},
-    4: {"nombre": "Amparito Roca", "tags": ["famoso", "alegre"]},
-    5: {"nombre": "Azcárraga", "tags": ["pasacalle", "clasico"]},
-    6: {"nombre": "Baidal", "tags": ["tradicional"]},
-    7: {"nombre": "Borosko", "tags": ["marchoso", "alegre"]},
-    8: {"nombre": "Campanera", "tags": ["popular", "alegre"]},
-    9: {"nombre": "Caridad Guardiola", "tags": ["torero"]},
-    10: {"nombre": "Churumbelerias", "tags": ["alegre", "concierto"]},
-    11: {"nombre": "Ecos Españoles", "tags": ["torero", "clasico"]},
-    12: {"nombre": "Eduardo Borrás", "tags": ["elegante"]},
-    13: {"nombre": "Educandos de Benejúzar", "tags": ["famoso", "facil", "alegre"]},
-    14: {"nombre": "El Abuelo", "tags": ["popular", "alegre"]},
-    15: {"nombre": "El Bequetero", "tags": ["fiesta", "alegre", "facil"]},
-    16: {"nombre": "El Gato Montés", "tags": ["famoso", "torero"]},
-    17: {"nombre": "El Tío Caniyitas", "tags": ["alegre"]},
-    18: {"nombre": "El Tío Ramón", "tags": ["popular", "alegre"]},
-    19: {"nombre": "El Tito", "tags": ["alegre", "facil"]},
-    20: {"nombre": "Farolero", "tags": ["torero"]},
-    21: {"nombre": "Febrer", "tags": ["concierto", "alegre"]},
-    22: {"nombre": "Fiesta en Benidorm", "tags": ["alegre", "popular"]},
-    23: {"nombre": "Jose Luis Valero", "tags": ["alegre"]},
-    24: {"nombre": "Juanito el Jarri", "tags": ["pasacalle"]},
-    25: {"nombre": "La Banda 2014", "tags": ["moderno", "alegre"]},
-    26: {"nombre": "La Vereda", "tags": ["alegre", "pasacalle"]},
-    27: {"nombre": "La Puerta Grande", "tags": ["torero", "famoso"]},
-    28: {"nombre": "L'Entrà", "tags": ["potente", "fiesta", "alegre"]},
-    29: {"nombre": "Martín García", "tags": ["elegante", "alegre"]},
-    30: {"nombre": "Miguel Crespo", "tags": ["tradicional", "elegante"]},
-    31: {"nombre": "Operador", "tags": ["facil", "alegre"]},
-    32: {"nombre": "Orgullo Santiaguista", "tags": ["fiesta", "alegre"]},
-    34: {"nombre": "Paquito el Chocolatero", "tags": ["fiesta", "famoso", "facil", "alegre"]},
-    35: {"nombre": "Pepe Antón", "tags": ["tradicional", "alegre"]},
-    36: {"nombre": "Pepe el Fester", "tags": ["fiesta", "alegre"]},
-    37: {"nombre": "Pérez Barceló", "tags": ["clasico", "alegre"]},
-    38: {"nombre": "Quelo", "tags": ["marchoso", "alegre"]},
-    39: {"nombre": "Ragón Falez", "tags": ["concierto", "alegre", "elegante"]},
-    40: {"nombre": "Tayo", "tags": ["pasacalle", "alegre"]},
-    41: {"nombre": "Tercio de Quites", "tags": ["torero", "elegante"]},
-    42: {"nombre": "Tomás Ferrús", "tags": ["potente", "alegre"]},
-    43: {"nombre": "Valencia", "tags": ["himno"]},
-    44: {"nombre": "Vicente Marín", "tags": ["marchoso", "alegre"]},
-    45: {"nombre": "Xàbia", "tags": ["famoso", "alegre"]},
-    46: {"nombre": "El Fallero", "tags": ["himno"]},
-    47: {"nombre": "Pepe Pons", "tags": ["pasacalle", "alegre"]}
-}
+# --- Desactivado -- PASODOBLES = {
+#    1: {"nombre": "Alcalde i Músic", "tags": ["alegre", "pasacalle"]},
+#    2: {"nombre": "Alegría Agostense", "tags": ["alegre", "facil"]},
+#    3: {"nombre": "Alfara de Algimia", "tags": ["concierto"]},
+#    4: {"nombre": "Amparito Roca", "tags": ["famoso", "alegre"]},
+#    5: {"nombre": "Azcárraga", "tags": ["pasacalle", "clasico"]},
+#    6: {"nombre": "Baidal", "tags": ["tradicional"]},
+#    7: {"nombre": "Borosko", "tags": ["marchoso", "alegre"]},
+#    8: {"nombre": "Campanera", "tags": ["popular", "alegre"]},
+#    9: {"nombre": "Caridad Guardiola", "tags": ["torero"]},
+#    10: {"nombre": "Churumbelerias", "tags": ["alegre", "concierto"]},
+#    11: {"nombre": "Ecos Españoles", "tags": ["torero", "clasico"]},
+#    12: {"nombre": "Eduardo Borrás", "tags": ["elegante"]},
+#    13: {"nombre": "Educandos de Benejúzar", "tags": ["famoso", "facil", "alegre"]},
+#    14: {"nombre": "El Abuelo", "tags": ["popular", "alegre"]},
+#    15: {"nombre": "El Bequetero", "tags": ["fiesta", "alegre", "facil"]},
+#    16: {"nombre": "El Gato Montés", "tags": ["famoso", "torero"]},
+#    17: {"nombre": "El Tío Caniyitas", "tags": ["alegre"]},
+#    18: {"nombre": "El Tío Ramón", "tags": ["popular", "alegre"]},
+#    19: {"nombre": "El Tito", "tags": ["alegre", "facil"]},
+#    20: {"nombre": "Farolero", "tags": ["torero"]},
+#    21: {"nombre": "Febrer", "tags": ["concierto", "alegre"]},
+#    22: {"nombre": "Fiesta en Benidorm", "tags": ["alegre", "popular"]},
+#    23: {"nombre": "Jose Luis Valero", "tags": ["alegre"]},
+#    24: {"nombre": "Juanito el Jarri", "tags": ["pasacalle"]},
+#    25: {"nombre": "La Banda 2014", "tags": ["moderno", "alegre"]},
+#    26: {"nombre": "La Vereda", "tags": ["alegre", "pasacalle"]},
+#    27: {"nombre": "La Puerta Grande", "tags": ["torero", "famoso"]},
+#    28: {"nombre": "L'Entrà", "tags": ["potente", "fiesta", "alegre"]},
+#    29: {"nombre": "Martín García", "tags": ["elegante", "alegre"]},
+#    30: {"nombre": "Miguel Crespo", "tags": ["tradicional", "elegante"]},
+#    31: {"nombre": "Operador", "tags": ["facil", "alegre"]},
+#    32: {"nombre": "Orgullo Santiaguista", "tags": ["fiesta", "alegre"]},
+#    34: {"nombre": "Paquito el Chocolatero", "tags": ["fiesta", "famoso", "facil", "alegre"]},
+#    35: {"nombre": "Pepe Antón", "tags": ["tradicional", "alegre"]},
+#    36: {"nombre": "Pepe el Fester", "tags": ["fiesta", "alegre"]},
+#    37: {"nombre": "Pérez Barceló", "tags": ["clasico", "alegre"]},
+#    38: {"nombre": "Quelo", "tags": ["marchoso", "alegre"]},
+#    39: {"nombre": "Ragón Falez", "tags": ["concierto", "alegre", "elegante"]},
+#    40: {"nombre": "Tayo", "tags": ["pasacalle", "alegre"]},
+#    41: {"nombre": "Tercio de Quites", "tags": ["torero", "elegante"]},
+#    42: {"nombre": "Tomás Ferrús", "tags": ["potente", "alegre"]},
+#    43: {"nombre": "Valencia", "tags": ["himno"]},
+#    44: {"nombre": "Vicente Marín", "tags": ["marchoso", "alegre"]},
+#    45: {"nombre": "Xàbia", "tags": ["famoso", "alegre"]},
+#    46: {"nombre": "El Fallero", "tags": ["himno"]},
+#    47: {"nombre": "Pepe Pons", "tags": ["pasacalle", "alegre"]}
+# }
 
 # Título visual
 st.title("🎵 Generador de Repertorio")
