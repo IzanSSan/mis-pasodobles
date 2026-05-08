@@ -133,3 +133,33 @@ if st.button("🔀 GENERAR SORTEO", use_container_width=True):
         st.info("💡 Recordatorio: 2 vueltas + redoble de descanso")
     else:
         st.error("No hay suficientes pasodobles con ese filtro.")
+# --- PANEL DE ADMINISTRACIÓN PARA EDICIÓN ---
+st.divider() # Una línea visual para separar el sorteo del panel
+with st.expander("🔐 Configuración del Archivo (Administrador)"):
+    password = st.text_input("Introduce la clave para editar etiquetas:", type="password")
+    
+    # Elige la contraseña que tú quieras
+    if password == "Daimus2026":
+        st.info("🔓 Modo edición activado. Selecciona un pasodoble para cambiar sus filtros.")
+        
+        # Seleccionamos el pasodoble por nombre
+        nombres_disponibles = [p["nombre"] for p in PASODOBLES.values()]
+        seleccionado = st.selectbox("¿Qué pasodoble quieres retocar?", nombres_disponibles)
+        
+        # Buscamos los tags actuales de ese pasodoble
+        id_actual = [k for k, v in PASODOBLES.items() if v["nombre"] == seleccionado][0]
+        tags_actuales = ", ".join(PASODOBLES[id_actual]["tags"])
+        
+        nuevos_tags = st.text_input(f"Etiquetas para '{seleccionado}':", value=tags_actuales)
+        
+        if st.button("💾 GUARDAR CAMBIOS EN EL EXCEL"):
+            # Aquí actualizamos el DataFrame del Excel
+            df.loc[df['Nombre'] == seleccionado, 'Tags'] = nuevos_tags
+            
+            # Subimos el cambio a Google Sheets
+            conn.update(spreadsheet=st.secrets["connections"]["gsheets"]["spreadsheet"], data=df)
+            
+            st.success(f"✅ ¡Actualizado! '{seleccionado}' ahora tiene los tags: {nuevos_tags}")
+            st.balloons()
+    elif password != "":
+        st.error("Contraseña incorrecta")
