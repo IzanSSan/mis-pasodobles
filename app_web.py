@@ -17,19 +17,26 @@ def cargar_datos_sheet():
 # Llamamos a la función
 df = cargar_datos_sheet()
 
-# Convertimos a diccionario para no romper el código del sorteo
+# Convertimos a diccionario asegurando limpieza total de datos
 PASODOBLES = {}
-for index, row in df.iterrows():
-    # Usamos .get para evitar errores si falta algún dato
-    idx = int(row['ID'])
-    nombre = str(row['Nombre'])
-    tags_raw = str(row['Tags'])
-    
-    PASODOBLES[idx] = {
-        "nombre": nombre,
-        "tags": [t.strip().lower() for t in tags_raw.split(',')]
-    }
+# Eliminamos filas que tengan el nombre vacío para evitar errores
+df_limpio = df.dropna(subset=['Nombre'])
 
+for index, row in df_limpio.iterrows():
+    try:
+        idx = int(row['ID'])
+        nombre = str(row['Nombre']).strip() # .strip() quita espacios invisibles
+        tags_raw = str(row['Tags']) if pd.notna(row['Tags']) else ""
+        
+        # Guardamos todo en minúsculas y sin espacios extra
+        lista_tags = [t.strip().lower() for t in tags_raw.split(',') if t.strip()]
+        
+        PASODOBLES[idx] = {
+            "nombre": nombre,
+            "tags": lista_tags
+        }
+    except:
+        continue # Si una fila da error (ej. ID no es número), la salta y sigue
 # --- BASE DE DATOS COMPLETA REVISADA ---
 # --- Desactivado -- PASODOBLES = {
 #    1: {"nombre": "Alcalde i Músic", "tags": ["alegre", "pasacalle"]},
