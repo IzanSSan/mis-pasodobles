@@ -136,49 +136,35 @@ if st.button("🔀 GENERAR SORTEO", use_container_width=True):
 # --- PANEL DE GESTIÓN MUSICAL (ADMIN) ---
 st.divider()
 
-# Estilo personalizado para que el panel destaque
-st.markdown("""
-    <style>
-    .admin-box {
-        background-color: #f0f2f6;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #d1d5db;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
 with st.expander("🛠️ PANEL DE ADMINISTRACIÓN"):
-    col_lock, col_text = st.columns([1, 5])
-    with col_lock:
-        st.write("# 🔐")
-    with col_text:
-        password = st.text_input("Introduce la clave de Archivero para gestionar la base de datos:", type="password")
-    
-    if password == "Daimus2026":
-        st.success("**¡Hola, Administrador!** Acceso concedido al archivo maestro.")
+    # Inicializamos el estado del login si no existe
+    if 'admin_autenticado' not in st.session_state:
+        st.session_state.admin_autenticado = False
+
+    if not st.session_state.admin_autenticado:
+        # Formulario de entrada
+        password = st.text_input("Introduce la clave de Archivero:", type="password")
+        if st.button("🔓 ACCEDER"):
+            if password == "Daimus2026":
+                st.session_state.admin_autenticado = True
+                st.rerun() # Recargamos para mostrar el panel
+            else:
+                st.error("Contraseña incorrecta")
+    else:
+        # Si ya está autenticado, mostramos el panel elegante
+        st.success("**¡Hola, Administrador!** Acceso concedido.")
         
-        # Diseño en columnas para la info y el botón
         c1, c2 = st.columns([2, 1])
-        
         with c1:
             st.markdown("""
             ### Gestión de Pasodobles
-            Desde aquí puedes:
-            *   **Editar:** Cambiar nombres o etiquetas de pasodobles existentes.
-            *   **Añadir:** Insertar nuevas piezas al final de la lista.
-            *   **Limpiar:** Corregir errores en los filtros (tags).
-            
-            *Nota: Al terminar de editar en Google Sheets, cierra esa pestaña y refresca esta App para ver los cambios.*
+            Puedes editar, añadir o corregir piezas directamente en la base de datos de Google.
             """)
+            if st.button("🔒 CERRAR SESIÓN"):
+                st.session_state.admin_autenticado = False
+                st.rerun()
         
         with c2:
-            st.write("##") # Espaciador
-            # Usamos la URL que ya tienes en tus Secrets
+            st.write("##")
             url_excel = st.secrets["connections"]["gsheets"]["spreadsheet"]
-            
             st.link_button("📂 ABRIR ARCHIVO MAESTRO", url_excel, use_container_width=True, type="primary")
-            st.caption("Acceso directo a Google Sheets")
-
-    elif password != "":
-        st.error("Contraseña incorrecta. Inténtalo de nuevo.")
