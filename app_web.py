@@ -9,16 +9,20 @@ st.set_page_config(page_title="Elección de pasodobles", page_icon="🎵")
 # En lugar de la lista manual, leemos el Excel
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Leemos los datos (Asegúrate de que tu Excel tenga columnas: ID, Nombre, Tags)
+# Leemos los datos (indicando que queremos la hoja principal)
 df = conn.read()
 
-# Convertimos el Excel a un diccionario para que el resto de tu código
-# de sorteo siga funcionando sin cambiar ni una coma
+# Convertimos a diccionario para no romper el código del sorteo
 PASODOBLES = {}
 for index, row in df.iterrows():
-    PASODOBLES[int(row['ID'])] = {
-        "nombre": row['Nombre'],
-        "tags": [t.strip() for t in str(row['Tags']).split(',')]
+    # Usamos .get para evitar errores si falta algún dato
+    idx = int(row['ID'])
+    nombre = str(row['Nombre'])
+    tags_raw = str(row['Tags'])
+    
+    PASODOBLES[idx] = {
+        "nombre": nombre,
+        "tags": [t.strip().lower() for t in tags_raw.split(',')]
     }
 
 # --- BASE DE DATOS COMPLETA REVISADA ---
