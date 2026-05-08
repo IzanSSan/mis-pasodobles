@@ -155,7 +155,7 @@ with st.expander("🛠️ PANEL DE ADMINISTRACIÓN"):
     with col_text:
         password = st.text_input("Introduce la clave de Archivero para gestionar la base de datos:", type="password")
     
-    if password == "Banda2025":
+    if password == "Daimus2026":
         st.success("**¡Hola, Administrador!** Acceso concedido al archivo maestro.")
         
         # Diseño en columnas para la info y el botón
