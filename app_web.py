@@ -56,6 +56,23 @@ PASODOBLES = {
 
 # Título visual
 st.title("🎵 Generador de Repertorio")
+# --- BOTÓN PARA CONSULTAR LA LISTA COMPLETA ---
+with st.expander("📖 CONSULTAR ARCHIVO COMPLETO (47 Pasodobles)"):
+    # Creamos dos columnas para que la lista no sea un "chorizo" infinito hacia abajo
+    col1, col2 = st.columns(2)
+    
+    # Dividimos los pasodobles en dos grupos para mostrarlos
+    mitad = len(PASODOBLES) // 2 + 1
+    
+    with col1:
+        for i in range(1, mitad):
+            if i in PASODOBLES:
+                st.write(f"**{i}.** {PASODOBLES[i]['nombre']}")
+                
+    with col2:
+        for i in range(mitad, 48):
+            if i in PASODOBLES:
+                st.write(f"**{i}.** {PASODOBLES[i]['nombre']}")
 st.markdown("### Selección de Pasodobles")
 
 # Filtros en la barra lateral o principal
