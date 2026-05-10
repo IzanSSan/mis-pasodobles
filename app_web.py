@@ -55,7 +55,7 @@ st.markdown("### Selección de Pasodobles")
 
 modo = st.selectbox(
     "¿Qué tipo de acto es?",
-    ["Todo el archivo", "Pasacalle Alegre (Sin himnos)", "Sólo Fáciles", "Estilo Torero", "Pasacalle Elegante"]
+    ["Todo el archivo", "Pasacalle Alegre", "Sólo Fáciles", "Estilo Torero", "Entrada de bandas"]
 )
 
 cantidad = st.number_input("¿Cuántos pasodobles necesitas?", min_value=1, max_value=15, value=4)
@@ -64,10 +64,10 @@ cantidad = st.number_input("¿Cuántos pasodobles necesitas?", min_value=1, max_
 if st.button("🔀 GENERAR SORTEO", use_container_width=True):
     candidatos_ids = []
     filtro_map = {
-        "Pasacalle Alegre (Sin himnos)": "alegre",
+        "Pasacalle Alegre": "alegre",
         "Sólo Fáciles": "facil",
         "Estilo Torero": "torero",
-        "Pasacalle Elegante": "elegante"
+        "Entrada de bandas": "elegante"
     }
     
     tag_buscado = filtro_map.get(modo)
